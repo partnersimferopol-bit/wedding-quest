@@ -7,9 +7,10 @@ import type { Location } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { MapPin, Lock, Check } from "lucide-react";
 
-export const SHIP_SAIL_DURATION = 3.8;
+export const SHIP_SAIL_DURATION = 4;
 
 const SHIP_OFFSET = { x: 4, y: -3 };
+const PATH_STEPS = 20;
 
 interface TreasureMapProps {
   locations: Location[];
@@ -34,28 +35,31 @@ function toShipStyle(pos: { x: number; y: number }) {
   };
 }
 
-function getSailArc(from: { x: number; y: number }, to: { x: number; y: number }) {
-  const midX = (from.x + to.x) / 2;
-  const midY = (from.y + to.y) / 2;
+/** Плавная дуга по квадратичной кривой Безье */
+function getSailPath(from: { x: number; y: number }, to: { x: number; y: number }) {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
   const len = Math.hypot(dx, dy) || 1;
-  const arc = Math.min(14, len * 0.4);
-  const midXArc = midX + (-dy / len) * arc;
-  const midYArc = midY + (dx / len) * arc;
+  const arc = Math.min(12, len * 0.35);
 
-  return {
-    left: [
-      `${from.x + SHIP_OFFSET.x}%`,
-      `${midXArc + SHIP_OFFSET.x}%`,
-      `${to.x + SHIP_OFFSET.x}%`,
-    ],
-    top: [
-      `${from.y + SHIP_OFFSET.y}%`,
-      `${midYArc + SHIP_OFFSET.y}%`,
-      `${to.y + SHIP_OFFSET.y}%`,
-    ],
-  };
+  const cx = (from.x + to.x) / 2 + (-dy / len) * arc;
+  const cy = (from.y + to.y) / 2 + (dx / len) * arc;
+
+  const left: string[] = [];
+  const top: string[] = [];
+  const times: number[] = [];
+
+  for (let i = 0; i <= PATH_STEPS; i++) {
+    const t = i / PATH_STEPS;
+    const inv = 1 - t;
+    const x = inv * inv * from.x + 2 * inv * t * cx + t * t * to.x;
+    const y = inv * inv * from.y + 2 * inv * t * cy + t * t * to.y;
+    left.push(`${x + SHIP_OFFSET.x}%`);
+    top.push(`${y + SHIP_OFFSET.y}%`);
+    times.push(t);
+  }
+
+  return { left, top, times };
 }
 
 export function TreasureMap({
@@ -81,6 +85,11 @@ export function TreasureMap({
     isSailing && shipTargetPosition
       ? getHeading(shipPosition, shipTargetPosition)
       : idleHeading;
+
+  const sailPath =
+    isSailing && shipTargetPosition
+      ? getSailPath(shipPosition, shipTargetPosition)
+      : null;
 
   const handleLocationClick = (loc: Location, index: number) => {
     if (!isAccessible(index)) return;
@@ -112,16 +121,16 @@ export function TreasureMap({
         <motion.div
           className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-1/2"
           animate={
-            isSailing && shipTargetPosition
-              ? getSailArc(shipPosition, shipTargetPosition)
+            sailPath
+              ? { left: sailPath.left, top: sailPath.top }
               : toShipStyle(shipPosition)
           }
           transition={
-            isSailing
+            sailPath
               ? {
                   duration: SHIP_SAIL_DURATION,
-                  ease: [0.42, 0, 0.18, 1],
-                  times: [0, 0.48, 1],
+                  ease: "linear",
+                  times: sailPath.times,
                 }
               : { duration: 0.6, ease: "easeOut" }
           }
@@ -130,25 +139,17 @@ export function TreasureMap({
             animate={
               isSailing
                 ? {
-                    rotate: [
-                      sailHeading - 6,
-                      sailHeading + 3,
-                      sailHeading - 2,
-                      sailHeading + 4,
-                      sailHeading,
-                    ],
-                    y: [0, -6, 3, -4, 0],
-                    x: [0, 2, -1, 1, 0],
+                    rotate: [sailHeading - 2, sailHeading + 1.5, sailHeading],
                   }
                 : {
                     rotate: [
-                      idleHeading - 3,
-                      idleHeading + 2,
+                      idleHeading - 2,
+                      idleHeading + 1.5,
                       idleHeading - 1,
-                      idleHeading + 3,
-                      idleHeading - 3,
+                      idleHeading + 2,
+                      idleHeading - 2,
                     ],
-                    y: [0, -5, 2, -3, 0],
+                    y: [0, -4, 1, -2, 0],
                   }
             }
             transition={
@@ -156,10 +157,10 @@ export function TreasureMap({
                 ? {
                     duration: SHIP_SAIL_DURATION,
                     ease: "easeInOut",
-                    times: [0, 0.25, 0.55, 0.8, 1],
+                    times: [0, 0.5, 1],
                   }
                 : {
-                    duration: 4.5,
+                    duration: 5,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }

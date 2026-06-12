@@ -89,10 +89,11 @@ export function FinaleSequence({ wedding, soundEnabled, onComplete }: FinaleSequ
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 1.1, opacity: 0 }}
               transition={{ type: "spring", stiffness: 120, damping: 14 }}
-              className="relative mx-auto h-48 w-48"
+              className="mx-auto"
             >
-              <Image src={IMAGES.chestClosed} alt="Сундук" fill className="object-contain" />
-              <p className="mt-4 text-amber-300/80">На берегу вас ждёт сундук...</p>
+              <div className="relative mx-auto h-48 w-48 sm:h-52 sm:w-52">
+                <Image src={IMAGES.chestClosed} alt="Сундук" fill className="object-contain" />
+              </div>
             </motion.div>
           )}
 
@@ -102,10 +103,11 @@ export function FinaleSequence({ wedding, soundEnabled, onComplete }: FinaleSequ
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="relative mx-auto h-48 w-48"
+              className="mx-auto"
             >
-              <Image src={IMAGES.chestOpen} alt="Открытый сундук" fill className="object-contain" />
-              <p className="mt-4 text-amber-300/80">Сундук открывается...</p>
+              <div className="relative mx-auto h-48 w-48 sm:h-52 sm:w-52">
+                <Image src={IMAGES.chestOpen} alt="Открытый сундук" fill className="object-contain" />
+              </div>
             </motion.div>
           )}
 
@@ -115,9 +117,9 @@ export function FinaleSequence({ wedding, soundEnabled, onComplete }: FinaleSequ
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              className="relative"
+              className="mx-auto"
             >
-              <div className="relative mx-auto h-48 w-48">
+              <div className="relative mx-auto h-48 w-48 sm:h-52 sm:w-52">
                 <Image src={IMAGES.chestOpen} alt="" fill className="object-contain" />
                 <motion.div
                   animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.3, 1] }}

@@ -153,7 +153,7 @@ export function GameApp({ wedding }: GameAppProps) {
           setToast(successMsg);
           setTimeout(() => setToast(null), 3500);
         }
-      }, isFinal ? 300 : SHIP_SAIL_DURATION * 1000 + 200);
+      }, isFinal ? 300 : SHIP_SAIL_DURATION * 1000 + 300);
     },
     [completeLocation, locations.length, progress.soundEnabled]
   );
