@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { getWeddingBySlug } from "@/lib/demo-data";
+import { getAllWeddingSlugs, getWeddingBySlug } from "@/lib/demo-data";
 import { GalleryView } from "@/components/gallery/GalleryView";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export function generateStaticParams() {
+  return getAllWeddingSlugs().map((slug) => ({ slug }));
 }
 
 export default async function GalleryPage({ params }: PageProps) {

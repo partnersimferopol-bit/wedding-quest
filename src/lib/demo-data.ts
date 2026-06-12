@@ -180,3 +180,7 @@ export function getWeddingBySlug(slug: string): WeddingProject | null {
   if (slug === DEMO_WEDDING.slug) return DEMO_WEDDING;
   return null;
 }
+
+export function getAllWeddingSlugs(): string[] {
+  return [DEMO_WEDDING.slug];
+}

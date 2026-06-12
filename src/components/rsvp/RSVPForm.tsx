@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle } from "lucide-react";
 import type { WeddingProject, RSVPData } from "@/lib/types";
+import { assetPath } from "@/lib/utils";
 
 interface RSVPFormProps {
   wedding: WeddingProject;
@@ -31,26 +32,31 @@ export function RSVPForm({ wedding, onClose }: RSVPFormProps) {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  const saveLocally = () => {
+    try {
+      const existing = JSON.parse(localStorage.getItem("wedding-quest-rsvp-list") || "[]");
+      existing.push({ ...form, weddingId: wedding.id });
+      localStorage.setItem("wedding-quest-rsvp-list", JSON.stringify(existing));
+    } catch {
+      /* ignore */
+    }
+    setSubmitted(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("/api/rsvp", {
+      const res = await fetch(assetPath("/api/rsvp"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, weddingId: wedding.id }),
       });
       if (res.ok) {
-        try {
-          const existing = JSON.parse(localStorage.getItem("wedding-quest-rsvp-list") || "[]");
-          existing.push({ ...form, weddingId: wedding.id });
-          localStorage.setItem("wedding-quest-rsvp-list", JSON.stringify(existing));
-        } catch { /* ignore */ }
-        setSubmitted(true);
+        saveLocally();
       }
     } catch {
-      /* fallback: still show success for demo */
-      setSubmitted(true);
+      saveLocally();
     }
     setLoading(false);
   };

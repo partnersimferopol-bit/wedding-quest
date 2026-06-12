@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getWeddingBySlug } from "@/lib/demo-data";
+import { getAllWeddingSlugs, getWeddingBySlug } from "@/lib/demo-data";
 import { GameApp } from "@/components/game/GameApp";
 import { notFound } from "next/navigation";
 
@@ -7,6 +7,10 @@ import { formatCoupleGenitive } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export function generateStaticParams() {
+  return getAllWeddingSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

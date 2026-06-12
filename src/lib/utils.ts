@@ -22,8 +22,14 @@ export function formatCoupleGenitive(
 /** Версия ассетов — увеличивайте при замене картинок, чтобы сбросить кэш браузера */
 export const IMAGE_VERSION = "20260612e";
 
+export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+export function assetPath(path: string): string {
+  return `${BASE_PATH}${path}`;
+}
+
 export function img(path: string): string {
-  return `${path}?v=${IMAGE_VERSION}`;
+  return `${assetPath(path)}?v=${IMAGE_VERSION}`;
 }
 
 export function formatWeddingDate(dateStr: string): string {

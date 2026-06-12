@@ -2,7 +2,9 @@
 
 import { useEffect, useRef } from "react";
 
-const MUSIC_SRC = "/audio/enduring-togetherness.mp3";
+import { assetPath } from "@/lib/utils";
+
+const MUSIC_SRC = assetPath("/audio/enduring-togetherness.mp3");
 const VOLUME = 0.35;
 
 export function useBackgroundMusic(enabled: boolean, shouldPlay: boolean) {
